@@ -7,6 +7,12 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 To start a local development server, run:
 
 ```bash
+npm install
+```
+
+and them:
+
+```bash
 ng serve
 ```
 
@@ -42,6 +48,12 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 
 ```bash
 ng test
+```
+
+To see the coverage of the project, use:
+
+```bash
+ng test --code-coverage
 ```
 
 ## Running end-to-end tests
