@@ -1,0 +1,126 @@
+<div class="converter-panel">
+  <div class="panel-header">
+    <h2>Conversor de Moedas</h2>
+    <p>Converta entre Ouro Real e Tibar com a taxa atual</p>
+  </div>
+
+  <form class="converter-form" [formGroup]="converterForm" (ngSubmit)="performConversion()">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fromCurrency">Moeda de Origem</label>
+        <select id="fromCurrency" formControlName="fromCurrency" class="form-control">
+          <option value="ouro-real">Ouro Real</option>
+          <option value="tibar">Tibar</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="amount">Valor</label>
+        <input 
+          type="number" 
+          id="amount" 
+          formControlName="amount" 
+          class="form-control"
+          placeholder="0.00"
+          step="0.01"
+          min="0"
+        >
+        <div class="error-message" *ngIf="converterForm.get('amount')?.invalid && converterForm.get('amount')?.touched">
+          <span *ngIf="converterForm.get('amount')?.errors?.['required']">Valor é obrigatório</span>
+          <span *ngIf="converterForm.get('amount')?.errors?.['min']">Valor deve ser maior que zero</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="toCurrency">Moeda de Destino</label>
+        <select id="toCurrency" formControlName="toCurrency" class="form-control">
+          <option value="tibar">Tibar</option>
+          <option value="ouro-real">Ouro Real</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Valor Convertido</label>
+        <div class="converted-value">
+          <span class="converted-amount">{{ convertedAmount() | number:'1.2-2' }}</span>
+          <span class="converted-currency">{{ getCurrencySymbol(toCurrency) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="converterForm.invalid || isConverting()">
+        <span *ngIf="!isConverting()">Salvar</span>
+        <span *ngIf="isConverting()">Salvando...</span>
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="clearForm()">
+        Limpar
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="conversion-history" *ngIf="conversionHistory().length > 0">
+  <div class="history-header">
+    <h3>Histórico de Conversões</h3>
+    <div class="history-actions">
+      <button class="btn btn-text" (click)="clearHistory()">Limpar Histórico</button>
+    </div>
+  </div>
+  <div class="history-list">
+    <div class="history-item" *ngFor="let conversion of conversionHistory(); trackBy: trackByConversion">
+      <div class="conversion-details">
+        <div class="conversion-amount">
+          {{ conversion.fromAmount | number:'1.2-2' }} {{ getCurrencySymbol(conversion.fromCurrency) }}
+          <span class="conversion-arrow">→</span>
+          {{ conversion.toAmount | number:'1.2-2' }} {{ getCurrencySymbol(conversion.toCurrency) }}
+        </div>
+        <div class="conversion-rate">
+          Taxa: {{ conversion.rate | number:'1.2-2' }}
+        </div>
+      </div>
+      <div class="conversion-time">
+        {{ conversion.timestamp | date:'short' }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para atualização de taxa -->
+<div class="modal-overlay" *ngIf="showUpdateRateModal()" (click)="closeUpdateRateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Atualizar Taxa de Conversão</h3>
+      <button class="modal-close" (click)="closeUpdateRateModal()">×</button>
+    </div>
+    <form class="modal-form" [formGroup]="rateForm" (ngSubmit)="updateRate()">
+      <div class="form-group">
+        <label for="newRate">Nova Taxa (Tibar por Ouro Real)</label>
+        <input 
+          type="number" 
+          id="newRate" 
+          formControlName="newRate" 
+          class="form-control"
+          placeholder="0.00"
+          step="0.01"
+          min="0"
+        >
+        <div class="error-message" *ngIf="rateForm.get('newRate')?.invalid && rateForm.get('newRate')?.touched">
+          <span *ngIf="rateForm.get('newRate')?.errors?.['required']">Taxa é obrigatória</span>
+          <span *ngIf="rateForm.get('newRate')?.errors?.['min']">Taxa deve ser maior que zero</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeUpdateRateModal()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="rateForm.invalid || isUpdatingRate()">
+          <span *ngIf="!isUpdatingRate()">Atualizar</span>
+          <span *ngIf="isUpdatingRate()">Atualizando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 

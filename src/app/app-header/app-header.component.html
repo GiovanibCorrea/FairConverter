@@ -1,0 +1,17 @@
+<header class="app-header">
+  <div class="header-content">
+    <div class="header-brand">
+      <h1>Wefin Converter</h1>
+      <p>Sistema de Conversão de Moedas</p>
+    </div>
+    
+    <div class="header-rate">
+      <div class="rate-display">
+        <span class="rate-label">Taxa Atual:</span>
+        <span class="rate-value">
+          1 {{ getCurrencySymbol('ouro-real') }} = {{ currentRate | number:'1.2-2' }} {{ getCurrencySymbol('tibar') }}
+        </span>
+      </div>
+    </div>
+  </div>
+</header> 
